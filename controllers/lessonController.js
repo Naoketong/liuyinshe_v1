@@ -1,4 +1,8 @@
 const LessonModel = require('./../models/lesson.js');
+const UserLessonModel = require('./../models/userlesson.js');
+const PaymentModel = require('./../models/payment.js')
+const UserModel = require('./../models/user.js');
+var { formatDate } = require('./../utils/date.js');
 
 const lessonController = {
   update:async function(req, res, next) {
@@ -16,6 +20,70 @@ const lessonController = {
       await LessonModel.update(id, { date, start_time, end_time });
       res.json({code: 200, messsage: '修改成功'})
     } catch (err) {
+      res.json({code:0,messsage: '服务器错误'});
+    }
+  },
+  show: async function(req, res, next) {
+    let lesson_id = req.params.id;
+    try{
+      let lessons = await LessonModel.where({id: lesson_id});
+      let lessonFirst = lessons[0];
+      lessonFirst.date = formatDate(lessonFirst.date);
+      let users = await UserLessonModel
+      .where({lesson_id})
+      .leftJoin('user', 'user_lesson.user_id', 'user.id')
+      .column('user.id', 'user.name', 'user_lesson.status', 'user_lesson.finish_at')
+      res.json({
+        code: 200, 
+        messsage: '获取成功',
+        data:{
+          lesson: lessonFirst,
+          users: users,
+        }
+      })
+    }catch (err) {
+      console.log(err)
+      res.json({
+        code:0,
+        messsage: '服务器错误'
+      });
+    }
+  },
+  callnow: async function(req,res,next){
+    let lesson_id = req.params.id;
+    let user_id = req.body.user_id;
+     if(!user_id) {
+      res.json({code:0,messsage: '缺少用户参数'});
+      return
+    }
+    try{
+      let userLessons = await UserLessonModel.where({ lesson_id, user_id});
+      console.log(userLessons)
+      let userLesson = userLessons[0];
+
+      if(!userLesson) {
+        res.json({code:0,messsage: '该用户没有报班，没有该课程'});
+        return
+      }
+      if(userLesson.status === 2) {
+        res.json({code:0,messsage: '该用户已上课'});
+        return
+      }
+
+      let lessons = await LessonModel.where({id: lesson_id});
+      let lessonInfo = lessons[0];
+      let total = -lessonInfo.price;
+      await UserLessonModel.update(userLesson.id, { status: 2, finish_at: new Date()})
+      await PaymentModel.insert({
+        user_id: user_id,
+        status: 2,
+        total: total,
+        remark:'用户上课 lesson_id:' + lesson_id
+      })
+      await UserModel.where({id: user_id}).increment({balance: total})
+      res.json({code: 200, messsage: '点名成功'})
+    }catch (err) {
+      console.log(err)
       res.json({code:0,messsage: '服务器错误'});
     }
   },

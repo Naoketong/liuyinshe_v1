@@ -22,6 +22,10 @@ class Base {
     return knex(this.table).select().where(params)
   }
 
+  where(params) {
+    return knex(this.table).where(params);
+  }
+
   show(params) {
     return knex(this.table).where(params).select();
   }
@@ -37,22 +41,6 @@ class Base {
   delete(id){/*删除信息 硬删除*/
     return knex(this.table).where('id', '=', id).del()
   }
-
-  
-
-
-  // count(params) {
-  //   return knex(this.table).where(params).count('id as total');       
-  // }
-
-  // pagination (pageSize = 20, currentPage = 1,params = {}) {
-  //   let offset = (currentPage - 1) * pageSize;
-  //   return knex(this.table)
-  //     .where(params)
-  //     .offset(offset)
-  //     .limit(pageSize)
-  //     .select()
-  // }
 
   count(params, dateFilter={}) {
     if(dateFilter.column) {

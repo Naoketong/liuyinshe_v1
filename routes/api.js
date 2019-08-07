@@ -39,10 +39,13 @@ router.post('/class', classControllers.insert);/*添加班级*/
 router.get('/class', classControllers.show);/*获取班级所有信息*/
 router.get('/class/:id', classControllers.personal);/*获取班级信息*/
 router.put('/class/:id', classControllers.updata);/*修改班级信息*/
-
+router.post('/class/:id/adduser', classControllers.adduser);
 
 // 课
 router.put('/lesson/:id', lessonController.update);
+router.get('/lesson/:id', lessonController.show);
+router.get('/lesson/:id/callnow', lessonController.callnow);
+
 
 module.exports = router;
  

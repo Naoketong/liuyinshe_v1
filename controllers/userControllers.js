@@ -1,4 +1,7 @@
 const UserModel = require('./../models/user.js');
+const UserClassModel = require('./../models/userclass.js');
+const { formatDate } = require('./../utils/date.js');
+
 
 const UserControllers = {
 	/*添加客户*/
@@ -30,40 +33,6 @@ const UserControllers = {
 		}
 	},
 	/*获取客户所有信息*/
-	// show: async function(req, res, next){
-	// 	let name = req.query.name;
-	// 	let phone = req.query.phone;
-	// 	let PageSize = req.query.page_size || 20;
-	// 	let currentPage = req.query.current_page || 1;
-	// 	let params = {};
-	// 	if(name) params.name = name;
-	// 	if(phone) params.phone = phone;
-	// 	// console.log(name,phone,PageSize,currentPage,params)
-	// 	try{
-	// 		const users = await UserModel.pagination(PageSize, currentPage, params).orderBy('id', 'desc');
-	// 		let usersCount = await UserModel.count(params);
-	// 		let total = usersCount[0].total;
-
-	// 		// console.log(users)
-	// 		res.json({ 
- //        code: 200, 
- //        message: '获取成功',
- //        pagination: {
- //        	total: total,
-	// 				current_page:currentPage,
-	// 				page_size: PageSize,
-	// 				data: users,
- //        }
- //      })
-	// 	}catch(err){
-	// 		console.log(err)
- //      res.json({ 
- //        code: 0,
- //        message: '获取失败'
- //      })
-	// 	}
-	// },
-
 	show: async function(req, res, next) {
     let name = req.query.name;
     let phone = req.query.phone;
@@ -97,9 +66,21 @@ const UserControllers = {
 		let id = req.params.id;
 		try{
 			const user = await UserModel.select({id})
+
+			 let klass = await UserClassModel
+          .where({ user_id: id })
+          .leftJoin('class', 'user_class.class_id', 'class.id')
+          .column('class.id','class.name', 'class.start_at', 'class.end_at')
+        klass.forEach(data => {
+          data.start_at = formatDate(data.start_at)
+          data.end_at = formatDate(data.end_at)
+        });
 			res.json({ 
         code: 200, 
-        data: user
+        data: {
+        	user: data,
+          class: klass
+        }
       })
 		}catch(err){
 			console.log(err)

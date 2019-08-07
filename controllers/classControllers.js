@@ -1,5 +1,7 @@
 const ClassModel = require('./../models/class.js');
 const LessonModel = require('./../models/lesson.js');
+const UserClassModel = require('./../models/userclass.js');
+const UserLessonModel = require('./../models/userlesson.js');
 
 var { formatDate } = require('./../utils/date.js');
 
@@ -91,7 +93,6 @@ const ClassControllers = {
       res.json({code:0,messsage: '服务器错误'});
     }
   },
-	
   /*修改单个班级信息*/
   updata:async function(req, res, next) {
     let id = req.params.id;
@@ -115,38 +116,100 @@ const ClassControllers = {
       res.json({code:0,messsage: '服务器错误'});
     }
   },
-
-
 	// /*获取单个班级信息*/
 	personal: async function(req, res, next){
-			let id = req.params.id;
-			try{
-				let classes = await ClassModel.show({ 'class.id':id})
-					.leftJoin('course', 'class.course_id', 'course.id')
-					.column('class.id', 'class.name', 'class.course_id', 'class.price', 'class.status',
-					'class.start_at', 'class.end_at',
-					{ course_name: 'course.name' });
-				let klass = classes[0];
-				klass.start_at = formatDate(klass.start_at)
-	      klass.end_at = formatDate(klass.end_at)
+		let id = req.params.id;
+		try{
+			let classes = await ClassModel.show({ 'class.id':id})
+				.leftJoin('course', 'class.course_id', 'course.id')
+				.column('class.id', 'class.name', 'class.course_id', 'class.price', 'class.status',
+				'class.start_at', 'class.end_at',
+				{ course_name: 'course.name' });
+			let klass = classes[0];
+			klass.start_at = formatDate(klass.start_at)
+	     klass.end_at = formatDate(klass.end_at)
 
-	      let class_id = klass.id;
-	      let lessons = await LessonModel.show({ class_id });
-	      lessons.forEach(data => {
-	      	data.date = data.date ? formatDate(data.date) : '-';
-	      })
-				res.json({ 
-	        code: 200, 
-	        data: classes
-	      })
-			}catch(err){
-				console.log(err)
-	      res.json({ 
-	        code: 0,
-	        message: '获取失败'
-	      })
-			}
+	     let class_id = klass.id;
+	     let lessons = await LessonModel.show({ class_id });
+	     lessons.forEach(data => {
+	     	data.date = data.date ? formatDate(data.date) : '-';
+	     })
+
+       let users = await UserClassModel
+        .where({ class_id: id })
+        .leftJoin('user', 'user_class.user_id', 'user.id')
+        .column('user.id','user.name', 'user.phone', 'user_class.created_at')
+			res.json({ 
+	       code: 200, 
+	       data: '获取成功', data: {
+          users: users,
+          class: klass,
+          lessons: lessons,
+         }
+	     })
+		}catch(err){
+			console.log(err)
+	     res.json({ 
+	       code: 0,
+	       message: '获取失败'
+	     })
+		}
 	},
+
+  arr: async function(req, res, next) {
+    try {
+      let users = await userClassModel
+        .where({ class_id: id })
+        .leftJoin('user', 'user_class.user_id', 'user.id')
+        .column('user.id','user.name', 'user.phone', 'user_class.created_at')
+
+      res.json({code: 200, messsage: '获取成功', data: {
+        users: users,
+        class: klass,
+        lessons: lessons
+      }})
+    } catch (err) {
+      console.log(err)
+      res.json({code:0,messsage: '服务器错误'});
+    }
+  },
+  adduser: async function(req, res, next){
+    let class_id = req.params.id;
+    let user_id = req.body.user_id;
+
+    try{
+      let lessons = await LessonModel.where({ class_id });
+
+      let userLessons = lessons.map( data => {
+        return{
+          lesson_id: data.id,
+          class_id: class_id,
+          user_id: user_id,
+        }
+      })
+
+      let userCLass = await UserClassModel.where({ user_id,class_id });
+      
+      let hasAddClass = userCLass.length > 0;
+      if(hasAddClass) {
+        res.json({ code: 0, message: '用户已经加入了该班级'})
+        return
+      }
+      await UserClassModel.insert({user_id, class_id});
+      await UserLessonModel.insert(userLessons)
+      res.json({ 
+         code: 200, 
+         data: '加入成功'
+       })
+    }catch(err){
+      console.log(err)
+       res.json({ 
+         code: 0,
+         message: '获取失败'
+       })
+    }
+  },
+  
 
 }
 module.exports = ClassControllers;
