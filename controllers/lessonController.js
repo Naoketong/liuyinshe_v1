@@ -87,6 +87,6 @@ const lessonController = {
       res.json({code:0,messsage: '服务器错误'});
     }
   },
-}
+} 
 
 module.exports = lessonController;
