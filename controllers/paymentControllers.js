@@ -31,46 +31,36 @@ const  PaymentControllers = {
       })
 		}
 	},
+	personal: async function(req, res, next){
+		console.log(123123,req.query)
+		let name = req.query.name;
+		let phone = req.query.phone;
+		console.log(name,123);
+		try{
+			const payment = await PaymentModel
+			.where({name})
+			.leftJoin('user', 'payment.user_id', 'user.id')
+      .column('payment.id', 'payment.total', 'payment.user_id', 'payment.created_at','payment.remark','payment.status', 'user.name','user.phone')
+			res.json({ 
+        code: 200, 
+        data: payment
+      })
+		}catch(err){
+			console.log(err)
+      res.json({ 
+        code: 0,
+        message: '获取失败'
+      })
+		}
+	},
 	/*获取钱款所有信息*/
-	// show: async function(req, res, next){
-	// 	let status = req.query.status;
-	// 	let PageSize = req.query.page_size || 20;
-	// 	let currentPage = req.query.current_page || 1;
-	// 	let params = {};
-	// 	if(status) params.status = status;
-	// 	try{
-	// 		let payments = await PaymentModel
-	// 		.pagination(PageSize, currentPage, params)
-	// 		.leftJoin('user', 'payment.user_id', 'user.id')
- //      .column('payment.id', 'payment.total', 'payment.user_id', 'payment.created_time', 'user.name')
-	// 		.orderBy('id', 'desc');
-
-	// 		payments.forEach(data => data.created_time = formatTime(data.created_time));
-
-	// 		let paymentCount = await PaymentModel.count(params);
-	// 		let total = paymentCount[0].total;
-	// 		res.json({code: 200, message: '获取成功', data: {
-	// 			total: total,
-	// 			current_page:currentPage,
-	// 			page_size: PageSize,
-	// 			data: payments,
-	// 		}})
-	// 	}catch(err) {
-	// 		 res.json({ 
-	//        code: 0,
-	//        message: '服务器失败'
-	//      })
-	// 	}
-	// },
-
-
 	show: async function(req, res, next ) {
     let status = req.query.status;
     let pageSize = req.query.page_size || 20;
     let currentPage = req.query.current_page || 1;
     let startAt = req.query.start_at;
     let endAt = req.query.end_at;
-    let filterColumn = (startAt && endAt) ? 'payment.created_time' : '';
+    let filterColumn = (startAt && endAt) ? 'payment.created_at' : '';
     let params = {};
     if(status) params.status = status;
     try {
@@ -81,9 +71,9 @@ const  PaymentControllers = {
           endAt: endAt,
         })
         .leftJoin('user', 'payment.user_id', 'user.id')
-        .column('payment.id', 'payment.total', 'payment.user_id', 'payment.created_time', 'user.name')
+        .column('payment.id', 'payment.total', 'payment.user_id', 'payment.created_at','payment.remark','payment.status', 'user.name')
         .orderBy('id', 'desc');
-      payments.forEach(data => data.created_time = formatTime(data.created_time));
+      payments.forEach(data => data.created_at = formatTime(data.created_at));
       let paymentsCount = await PaymentModel.count(params,  {
         column: filterColumn,
         startAt: startAt,

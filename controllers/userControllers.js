@@ -66,7 +66,7 @@ const UserControllers = {
 		let id = req.params.id;
 		try{
 			const user = await UserModel.select({id})
-
+			
 			 let klass = await UserClassModel
           .where({ user_id: id })
           .leftJoin('class', 'user_class.class_id', 'class.id')

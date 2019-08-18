@@ -30,6 +30,7 @@ router.put('/user/:id',/*authmiddleFilter.loginFilter,*/  userControllers.updata
 /*钱款收入*/
 router.post('/payment',/*authmiddleFilter.loginFilter,*/  paymentControllers.insert);/*添加钱款*/
 router.get('/payment',/*authmiddleFilter.loginFilter,*/  paymentControllers.show);/*获取钱款所有信息*/
+router.get('/payment/alone/',/*authmiddleFilter.loginFilter,*/  paymentControllers.personal);/*获取钱款单独信息*/
 
 // 课程
 router.post('/course',/*authmiddleFilter.loginFilter,*/  courseControllers.insert);/*添加课程*/

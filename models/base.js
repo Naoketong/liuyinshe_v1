@@ -22,6 +22,10 @@ class Base {
     return knex(this.table).select().where(params)
   }
 
+  // seek(name,params) {/*获取单独信息*/
+  //   return knex(this.table).where(name).select()
+  // }
+
   where(params) {
     return knex(this.table).where(params);
   }
