@@ -57,6 +57,7 @@ const UserControllers = {
         }
       }})
     } catch (err) {
+    	console.log(err)
       res.json({code:0,messsage: '服务器错误'});
     }
   },

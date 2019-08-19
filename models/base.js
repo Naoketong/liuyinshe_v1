@@ -61,6 +61,7 @@ class Base {
     if(dateFilter.column) {
       return knex(this.table)
         .where(params)
+        .whereNull('isdeleted')
         .offset(offset)
         .limit(pageSize)
         .whereBetween(dateFilter.column,[`${dateFilter.startAt} 00:00`, `${dateFilter.endAt} 23:59`])
@@ -69,6 +70,7 @@ class Base {
     }else{
       return knex(this.table)
         .where(params)
+        .whereNull('isdeleted')
         .offset(offset)
         .limit(pageSize)
         .select()

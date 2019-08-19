@@ -32,10 +32,9 @@ const  PaymentControllers = {
 		}
 	},
 	personal: async function(req, res, next){
-		console.log(123123,req.query)
 		let name = req.query.name;
 		let phone = req.query.phone;
-		console.log(name,123);
+		let arr = {name, phone}
 		try{
 			const payment = await PaymentModel
 			.where({name})

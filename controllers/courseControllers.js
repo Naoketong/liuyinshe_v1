@@ -37,9 +37,9 @@ const CourseControllers = {
       let users = await CourseModel
         .pagination(pageSize, currentPage, params)
         .orderBy('id', 'desc');
-      let usersCount = await CourseModel.count(params);
+      let courseCount = await CourseModel.count(params);
 
-      let total = usersCount[0].total;
+      let total = courseCount[0].total;
       res.json({code: 200, messsage: '获取成功', data: {
         datas: users,
         pagination: {
@@ -47,11 +47,44 @@ const CourseControllers = {
           current_page: currentPage,
           page_size: pageSize,
         }
+
+        
       }})
     } catch (err) {
       res.json({code:0,messsage: '服务器错误'});
     }
   },
+
+  // show: async function(req, res, next ) {
+  //   let status = req.query.status;
+  //   let pageSize = req.query.page_size || 20;
+  //   let currentPage = req.query.current_page || 1;
+  //   // let startAt = req.query.start_at;
+  //   // let endAt = req.query.end_at;
+  //   // let filterColumn = (startAt && endAt) ? 'payment.created_at' : '';
+  //   let params = {};
+  //   if(status) params.status = status;
+  //   try {
+  //     let payments = await CourseModel
+  //       .pagination(pageSize, currentPage, params, )
+  //       .orderBy('id', 'desc');
+  //     // payments.forEach(data => data.created_at = formatTime(data.created_at));
+  //     let paymentsCount = await CourseModel.count(
+  //     );
+  //     let total = paymentsCount[0].total;
+  //     res.json({code: 200, messsage: '获取成功', data: {
+  //       datas: payments,
+  //       pagination: {
+  //         total: total,
+  //         current_page: currentPage,
+  //         page_size: pageSize,
+  //       }
+  //     }})
+  //   } catch (err) {
+  //     console.log(err)
+  //     res.json({code:0,messsage: '服务器错误'});
+  //   }
+  // },
 
 	/*获取单个课程信息*/
 	personal: async function(req, res, next){
@@ -82,7 +115,8 @@ const CourseControllers = {
 			.update(id ,{name, description ,teacher,teacher_phone})
 			res.json({ 
         code: 200, 
-        data: '修改成功'
+        message: '修改成功',
+        data:courses
       })
 		}catch(err){
 			console.log(err)
@@ -93,22 +127,41 @@ const CourseControllers = {
 		}
 	},
 	/*删除单个课程信息 软删除*/
-	delete:async function(req, res, next){
-		let id = req.params.id;
-		let isdeleted = 1;
-		try{
-			const courses = await CourseModel.update(id,{isdeleted})
-			res.json({ 
+	// delete:async function(req, res, next){
+	// 	let id = req.params.id;
+	// 	let isdeleted = 1;
+	// 	try{
+	// 		const courses = await CourseModel.update(id,{isdeleted})
+	// 		res.json({ 
+ //        code: 200, 
+ //        data:courses,
+ //        message: '删除成功',
+ //      })
+	// 	}catch(err){
+	// 		console.log(err)
+ //      res.json({ 
+ //        code: 0,
+ //        message: '删除失败'
+ //      })
+	// 	}
+	// },
+  delete:async function(req, res, next){
+    let id = req.params.id;
+    let isdeleted = 1;
+    try{
+      const manager = await CourseModel.update(id,{isdeleted})
+      res.json({ 
         code: 200, 
-        data: '删除成功'
+        data: manager
       })
-		}catch(err){
-			console.log(err)
+    }catch(err){
+      console.log(err)
       res.json({ 
         code: 0,
         message: '删除失败'
       })
-		}
-	},
+    }
+  },
+  
 }
 module.exports = CourseControllers;
