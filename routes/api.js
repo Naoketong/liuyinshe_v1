@@ -33,8 +33,11 @@ router.get('/payment',/*authmiddleFilter.loginFilter,*/  paymentControllers.show
 router.get('/payment/alone/',/*authmiddleFilter.loginFilter,*/  paymentControllers.personal);/*获取钱款单独信息*/
 
 // 课程
+
 router.post('/course',/*authmiddleFilter.loginFilter,*/  courseControllers.insert);/*添加课程*/
+
 router.get('/course',/*authmiddleFilter.loginFilter,*/  courseControllers.show);/*获取课程所有信息*/
+router.get('/course/alone',/*authmiddleFilter.loginFilter,*/  courseControllers.search);
 router.get('/course/:id',/*authmiddleFilter.loginFilter,*/  courseControllers.personal);/*获取课程个人信息*/
 router.put('/course/:id',/*authmiddleFilter.loginFilter,*/  courseControllers.updata);/*修改课程个人信息*/
 router.delete('/course/:id',/*authmiddleFilter.loginFilter,*/ courseControllers.delete);/*删除课程信息 软删除*/

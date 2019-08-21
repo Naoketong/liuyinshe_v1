@@ -54,38 +54,6 @@ const CourseControllers = {
       res.json({code:0,messsage: '服务器错误'});
     }
   },
-
-  // show: async function(req, res, next ) {
-  //   let status = req.query.status;
-  //   let pageSize = req.query.page_size || 20;
-  //   let currentPage = req.query.current_page || 1;
-  //   // let startAt = req.query.start_at;
-  //   // let endAt = req.query.end_at;
-  //   // let filterColumn = (startAt && endAt) ? 'payment.created_at' : '';
-  //   let params = {};
-  //   if(status) params.status = status;
-  //   try {
-  //     let payments = await CourseModel
-  //       .pagination(pageSize, currentPage, params, )
-  //       .orderBy('id', 'desc');
-  //     // payments.forEach(data => data.created_at = formatTime(data.created_at));
-  //     let paymentsCount = await CourseModel.count(
-  //     );
-  //     let total = paymentsCount[0].total;
-  //     res.json({code: 200, messsage: '获取成功', data: {
-  //       datas: payments,
-  //       pagination: {
-  //         total: total,
-  //         current_page: currentPage,
-  //         page_size: pageSize,
-  //       }
-  //     }})
-  //   } catch (err) {
-  //     console.log(err)
-  //     res.json({code:0,messsage: '服务器错误'});
-  //   }
-  // },
-
 	/*获取单个课程信息*/
 	personal: async function(req, res, next){
 		let id = req.params.id;
@@ -127,24 +95,6 @@ const CourseControllers = {
 		}
 	},
 	/*删除单个课程信息 软删除*/
-	// delete:async function(req, res, next){
-	// 	let id = req.params.id;
-	// 	let isdeleted = 1;
-	// 	try{
-	// 		const courses = await CourseModel.update(id,{isdeleted})
-	// 		res.json({ 
- //        code: 200, 
- //        data:courses,
- //        message: '删除成功',
- //      })
-	// 	}catch(err){
-	// 		console.log(err)
- //      res.json({ 
- //        code: 0,
- //        message: '删除失败'
- //      })
-	// 	}
-	// },
   delete:async function(req, res, next){
     let id = req.params.id;
     let isdeleted = 1;
@@ -159,6 +109,26 @@ const CourseControllers = {
       res.json({ 
         code: 0,
         message: '删除失败'
+      })
+    }
+  },
+
+
+
+  search: async function(req, res, next){
+    let name = req.query.name;
+    try{
+      const courses = await CourseModel.select({name})
+      console.log(courses)
+      res.json({ 
+        code: 200, 
+        data: courses
+      })
+    }catch(err){
+      console.log(err)
+      res.json({ 
+        code: 0,
+        message: '获取失败'
       })
     }
   },
