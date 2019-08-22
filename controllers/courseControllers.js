@@ -102,7 +102,7 @@ const CourseControllers = {
       const manager = await CourseModel.update(id,{isdeleted})
       res.json({ 
         code: 200, 
-        data: manager
+        data: '删除成功'
       })
     }catch(err){
       console.log(err)

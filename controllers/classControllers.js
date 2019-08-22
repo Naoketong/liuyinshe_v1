@@ -15,6 +15,7 @@ const ClassControllers = {
 		let lesson_count = req.body.lesson_count;
 		let start_at = req.body.start_at;
 		let end_at = req.body.end_at;
+    let status = req.body.status;
 
 		if(!name || !course_id || isNaN(price) || isNaN(lesson_count) || !start_at || !end_at) {
 			res.json({code:0,messsage: '参数缺少'});
@@ -22,7 +23,7 @@ const ClassControllers = {
 		}
 		try{
 			const classes = await ClassModel.insert({
-				name, course_id, description, price, lesson_count, start_at, end_at
+				name, course_id, description, price, lesson_count, start_at, end_at, status
 			});
 			let class_id = classes[0];
 			let lessomPrice = price/lesson_count;
@@ -117,48 +118,65 @@ const ClassControllers = {
     }
   },
 	// /*获取单个班级信息*/
-	personal: async function(req, res, next){
-		let id = req.params.id;
-		try{
-			let classes = await ClassModel.show({ 'class.id':id})
-				.leftJoin('course', 'class.course_id', 'course.id')
-				.column('class.id', 'class.name', 'class.course_id', 'class.price', 'class.status',
-				'class.start_at', 'class.end_at',
-				{ course_name: 'course.name' });
-			let klass = classes[0];
-			klass.start_at = formatDate(klass.start_at)
-	     klass.end_at = formatDate(klass.end_at)
+	// personal: async function(req, res, next){
+	// 	let id = req.params.id;
+	// 	try{
+	// 		let classes = await ClassModel.show({ 'class.id':id})
+	// 			.leftJoin('course', 'class.course_id', 'course.id')
+	// 			.column('class.id', 'class.name', 'class.course_id', 'class.price', 'class.status',
+	// 			'class.start_at', 'class.end_at',
+	// 			{ course_name: 'course.name' });
+	// 		let klass = classes[0];
+	// 		klass.start_at = formatDate(klass.start_at)
+	//      klass.end_at = formatDate(klass.end_at)
 
-	     let class_id = klass.id;
-	     let lessons = await LessonModel.show({ class_id });
-	     lessons.forEach(data => {
-	     	data.date = data.date ? formatDate(data.date) : '-';
-	     })
+	//      let class_id = klass.id;
+	//      let lessons = await LessonModel.show({ class_id });
+	//      lessons.forEach(data => {
+	//      	data.date = data.date ? formatDate(data.date) : '-';
+	//      })
 
-       let users = await UserClassModel
-        .where({ class_id: id })
-        .leftJoin('user', 'user_class.user_id', 'user.id')
-        .column('user.id','user.name', 'user.phone', 'user_class.created_at')
-			res.json({ 
-	       code: 200, 
-	       data: '获取成功', data: {
-          users: users,
-          class: klass,
-          lessons: lessons,
-         }
-	     })
-		}catch(err){
-			console.log(err)
-	     res.json({ 
-	       code: 0,
-	       message: '获取失败'
-	     })
-		}
-	},
+ //       let users = await UserClassModel
+ //        .where({ class_id: id })
+ //        .leftJoin('user', 'user_class.user_id', 'user.id')
+ //        .column('user.id','user.name', 'user.phone', 'user_class.created_at')
+	// 		res.json({ 
+	//        code: 200, 
+	//        data: '获取成功', data: {
+ //          users: users,
+ //          class: klass,
+ //          lessons: lessons,
+ //         }
+	//      })
+	// 	}catch(err){
+	// 		console.log(err)
+	//      res.json({ 
+	//        code: 0,
+	//        message: '获取失败'
+	//      })
+	// 	}
+	// },
 
-  arr: async function(req, res, next) {
+
+  personal: async function(req, res, next) {
+    let id = req.params.id;
+
     try {
-      let users = await userClassModel
+      let classes = await ClassModel.show({ 'class.id': id})
+        .leftJoin('course', 'class.course_id', 'course.id')
+        .column('class.id', 'class.name', 'class.course_id', 'class.price', 'class.status', 
+          'class.start_at', 'class.end_at',
+          { course_name: 'course.name' });
+      let klass = classes[0];
+      klass.start_at = formatDate(klass.start_at)
+      klass.end_at = formatDate(klass.end_at)
+
+      let class_id = klass.id;
+      let lessons = await LessonModel.show({ class_id })
+      lessons.forEach(data => {
+        data.date = data.date ? formatDate(data.date) : '-';
+      })
+      let users = await UserClassModel
         .where({ class_id: id })
         .leftJoin('user', 'user_class.user_id', 'user.id')
         .column('user.id','user.name', 'user.phone', 'user_class.created_at')
@@ -173,6 +191,29 @@ const ClassControllers = {
       res.json({code:0,messsage: '服务器错误'});
     }
   },
+
+
+
+
+
+
+  // arr: async function(req, res, next) {
+  //   try {
+  //     let users = await userClassModel
+  //       .where({ class_id: id })
+  //       .leftJoin('user', 'user_class.user_id', 'user.id')
+  //       .column('user.id','user.name', 'user.phone', 'user_class.created_at')
+
+  //     res.json({code: 200, messsage: '获取成功', data: {
+  //       users: users,
+  //       class: klass,
+  //       lessons: lessons
+  //     }})
+  //   } catch (err) {
+  //     console.log(err)
+  //     res.json({code:0,messsage: '服务器错误'});
+  //   }
+  // },
   adduser: async function(req, res, next){
     let class_id = req.params.id;
     let user_id = req.body.user_id;

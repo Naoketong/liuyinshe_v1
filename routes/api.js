@@ -42,7 +42,7 @@ router.get('/course/:id',/*authmiddleFilter.loginFilter,*/  courseControllers.pe
 router.put('/course/:id',/*authmiddleFilter.loginFilter,*/  courseControllers.updata);/*修改课程个人信息*/
 router.delete('/course/:id',/*authmiddleFilter.loginFilter,*/ courseControllers.delete);/*删除课程信息 软删除*/
 
-// 班
+// 班级
 router.post('/class',/*authmiddleFilter.loginFilter,*/  classControllers.insert);/*添加班级*/
 router.get('/class',/*authmiddleFilter.loginFilter,*/  classControllers.show);/*获取班级所有信息*/
 router.get('/class/:id',/*authmiddleFilter.loginFilter,*/  classControllers.personal);/*获取班级信息*/

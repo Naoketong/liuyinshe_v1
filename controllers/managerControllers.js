@@ -27,7 +27,7 @@ const ManagerControllers = {
 	show: async function(req, res, next){
 		try{
 			const manager = await ManagerModel.allManager();
-			console.log(manager)
+			// console.log(manager)
 			res.json({ 
         code: 200, 
         data: manager
@@ -69,7 +69,7 @@ const ManagerControllers = {
 			const manager = await ManagerModel.update(id ,{name,phone,password})
 			res.json({ 
         code: 200, 
-        data: manager
+        data: '修改成功'
       })
 		}catch(err){
 			console.log(err)
@@ -87,7 +87,7 @@ const ManagerControllers = {
 			const manager = await ManagerModel.update(id,{isdeleted})
 			res.json({ 
         code: 200, 
-        data: manager
+        data: '删除成功'
       })
 		}catch(err){
 			console.log(err)

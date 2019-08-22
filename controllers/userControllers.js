@@ -38,7 +38,7 @@ const UserControllers = {
     let name = req.query.name;
     let phone = req.query.phone;
     let pageSize = req.query.page_size || 20;
-    let currentPage = req.query.current_page || 1;
+    let currentPage = req.query.current_page || 1; 
     let params = {};
     if(name) params.name = name;
     if(phone) params.phone = phone;
@@ -66,37 +66,35 @@ const UserControllers = {
   },
 	
 	/*获取客户个人信息*/
-	// personal: async function(req, res, next){
-	// 	let id = req.params.id;
-	// 	try{
-	// 		const user = await UserModel.select({id})
-	// 		user.forEach(data=>{
- //      	data.birthday = formatDate(data.birthday);
- //      	data.created_at = formatDate(data.created_at)
- //      })
-	// 		let klass = await UserClassModel
- //        .where({ user_id: id })
- //        .leftJoin('class', 'user_class.class_id', 'class.id')
- //        .column('class.id','class.name', 'class.start_at', 'class.end_at')
- //        klass.forEach(data => {
- //          data.start_at = formatDate(data.start_at)
- //          data.end_at = formatDate(data.end_at)
- //        });
-	// 		res.json({ 
- //        code: 200, 
- //        data: {
- //        	data: user,
- //          class: klass
- //        }
- //      })
-	// 	}catch(err){
-	// 		console.log(err)
- //      res.json({ 
- //        code: 0,
- //        message: '获取失败'
- //      })
-	// 	}
-	// },
+  // personal: async function(req,res,next) {
+  //   let id = req.params.id;
+  //   try {
+  //     let users = await UserModel.show({id});
+  //     let klass = await UserClassModel
+  //       .where({ user_id: id })
+  //       .leftJoin('class', 'user_class.class_id', 'class.id')
+  //       .column('class.id','class.name', 'class.start_at', 'class.end_at')
+  //     let payments = await PaymentModel.where({ user_id: id });
+  //     payments.forEach(data => data.created_at = formatDate(data.created_at));
+
+  //     klass.forEach(data => {
+  //       data.start_at = formatDate(data.start_at)
+  //       data.end_at = formatDate(data.end_at)
+  //     });
+
+  //     let userInfo = users[0];
+  //     userInfo.birthday = formatDate(userInfo.birthday);
+  //     res.json({code: 200, messsage: '获取成功', data: {
+  //       user: userInfo,
+  //       class: klass,
+  //       payments,
+  //     }})
+  //   } catch (err) {
+  //     console.log(err)
+  //     res.json({code:0,messsage: '服务器错误'});
+  //   }
+  // },
+
   personal: async function(req,res,next) {
     let id = req.params.id;
     try {
