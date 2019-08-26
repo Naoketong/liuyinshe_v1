@@ -113,6 +113,7 @@ const UserControllers = {
 
       let userInfo = users[0];
       userInfo.birthday = formatDate(userInfo.birthday);
+      userInfo.created_at = formatDate(userInfo.created_at)
       res.json({code: 200, messsage: '获取成功', data: {
         user: userInfo,
         class: klass,

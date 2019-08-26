@@ -23,20 +23,27 @@ const lessonController = {
       res.json({code:0,messsage: '服务器错误'});
     }
   },
-  show: async function(req, res, next) {
+  personal: async function(req, res, next) {
     let lesson_id = req.params.id;
     try{
       let lessons = await LessonModel.where({id: lesson_id});
       let lessonFirst = lessons[0];
+      // console.log(lessonFirst)
       lessonFirst.date = formatDate(lessonFirst.date);
+      // lessonFirst.start_time = formatDate(lessonFirst.start_time);
+      // lessonFirst.end_time = formatDate(lessonFirst.end_time);
       let users = await UserLessonModel
       .where({lesson_id})
       .leftJoin('user', 'user_lesson.user_id', 'user.id')
-      .column('user.id', 'user.name', 'user_lesson.status', 'user_lesson.finish_at')
+      .column('user.id', 'user.name', 'user_lesson.status', 'user_lesson.finish_at');
+      users.map(data=>{
+        data.finish_at = formatDate(data.finish_at)
+      })
       res.json({
         code: 200, 
         messsage: '获取成功',
         data:{
+          // ceshi:users,
           lesson: lessonFirst,
           users: users,
         }
@@ -49,18 +56,19 @@ const lessonController = {
       });
     }
   },
-  callnow: async function(req,res,next){
+
+  callnow: async function(req,res,next) {
     let lesson_id = req.params.id;
     let user_id = req.body.user_id;
-     if(!user_id) {
+
+    if(!user_id) {
       res.json({code:0,messsage: '缺少用户参数'});
       return
     }
-    try{
-      let userLessons = await UserLessonModel.where({ lesson_id, user_id});
-      console.log(userLessons)
-      let userLesson = userLessons[0];
 
+    try {
+      let userLessons = await UserLessonModel.where({ lesson_id, user_id });
+      let userLesson = userLessons[0];
       if(!userLesson) {
         res.json({code:0,messsage: '该用户没有报班，没有该课程'});
         return
@@ -70,19 +78,37 @@ const lessonController = {
         return
       }
 
-      let lessons = await LessonModel.where({id: lesson_id});
+      let lessons = await LessonModel.where({id: lesson_id})
       let lessonInfo = lessons[0];
-      let total = -lessonInfo.price;
-      await UserLessonModel.update(userLesson.id, { status: 2, finish_at: new Date()})
-      await PaymentModel.insert({
-        user_id: user_id,
-        status: 2,
-        total: total,
-        remark:'用户上课 lesson_id:' + lesson_id
-      })
-      await UserModel.where({id: user_id}).increment({balance: total})
+      let total = - lessonInfo.price;
+      await UserLessonModel.update(userLesson.id, { status: 2, finish_at: new Date()});
+      await PaymentModel.insert({ 
+          user_id: user_id, 
+          status: 2, 
+          total:  total, 
+          remark:  '用户上课 lesson_id:' + lesson_id
+        })
+      await UserModel
+        .where({ id: user_id })
+        .increment({ balance: total })
       res.json({code: 200, messsage: '点名成功'})
-    }catch (err) {
+    } catch (err) {
+      res.json({code:0,messsage: '服务器错误'});
+    }
+  },
+  status: async function(req,res,next) {
+    let id = req.params.id;
+    let status = req.body.status;
+    // console.log(status)
+    if(!status) {
+      res.json({code:0,messsage: '参数缺少'});
+      return
+    }
+
+    try {
+      await LessonModel.update(id, { status });
+      res.json({code: 200, messsage: '修改成功'})
+    } catch (err) {
       console.log(err)
       res.json({code:0,messsage: '服务器错误'});
     }

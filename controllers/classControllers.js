@@ -56,8 +56,6 @@ const ClassControllers = {
     if(status) params['class.status'] = status;
     if(name) params['class.name'] = name;
     if(course_id) params.course_id = course_id;
-
-
     try {
       let classes = await ClassModel
         .pagination(pageSize, currentPage, params, {
@@ -118,49 +116,8 @@ const ClassControllers = {
     }
   },
 	// /*获取单个班级信息*/
-	// personal: async function(req, res, next){
-	// 	let id = req.params.id;
-	// 	try{
-	// 		let classes = await ClassModel.show({ 'class.id':id})
-	// 			.leftJoin('course', 'class.course_id', 'course.id')
-	// 			.column('class.id', 'class.name', 'class.course_id', 'class.price', 'class.status',
-	// 			'class.start_at', 'class.end_at',
-	// 			{ course_name: 'course.name' });
-	// 		let klass = classes[0];
-	// 		klass.start_at = formatDate(klass.start_at)
-	//      klass.end_at = formatDate(klass.end_at)
-
-	//      let class_id = klass.id;
-	//      let lessons = await LessonModel.show({ class_id });
-	//      lessons.forEach(data => {
-	//      	data.date = data.date ? formatDate(data.date) : '-';
-	//      })
-
- //       let users = await UserClassModel
- //        .where({ class_id: id })
- //        .leftJoin('user', 'user_class.user_id', 'user.id')
- //        .column('user.id','user.name', 'user.phone', 'user_class.created_at')
-	// 		res.json({ 
-	//        code: 200, 
-	//        data: '获取成功', data: {
- //          users: users,
- //          class: klass,
- //          lessons: lessons,
- //         }
-	//      })
-	// 	}catch(err){
-	// 		console.log(err)
-	//      res.json({ 
-	//        code: 0,
-	//        message: '获取失败'
-	//      })
-	// 	}
-	// },
-
-
   personal: async function(req, res, next) {
     let id = req.params.id;
-
     try {
       let classes = await ClassModel.show({ 'class.id': id})
         .leftJoin('course', 'class.course_id', 'course.id')
@@ -175,45 +132,30 @@ const ClassControllers = {
       let lessons = await LessonModel.show({ class_id })
       lessons.forEach(data => {
         data.date = data.date ? formatDate(data.date) : '-';
+        // data.start_time = formatDate(data.start_time);
+        // data.end_time = formatDate(data.end_time)
       })
+
+
       let users = await UserClassModel
         .where({ class_id: id })
         .leftJoin('user', 'user_class.user_id', 'user.id')
-        .column('user.id','user.name', 'user.phone', 'user_class.created_at')
-
+        .column('user.id','user.name', 'user.phone', 'user_class.created_at');      
+      users.map(data=>{
+        console.log(data)
+        data.created_at = formatDate(data.created_at)
+      })
       res.json({code: 200, messsage: '获取成功', data: {
-        users: users,
-        class: klass,
-        lessons: lessons
+        // ceshi: lessons,
+        users: [users],
+        class: [klass],
+        lessons: [lessons]
       }})
     } catch (err) {
       console.log(err)
       res.json({code:0,messsage: '服务器错误'});
     }
   },
-
-
-
-
-
-
-  // arr: async function(req, res, next) {
-  //   try {
-  //     let users = await userClassModel
-  //       .where({ class_id: id })
-  //       .leftJoin('user', 'user_class.user_id', 'user.id')
-  //       .column('user.id','user.name', 'user.phone', 'user_class.created_at')
-
-  //     res.json({code: 200, messsage: '获取成功', data: {
-  //       users: users,
-  //       class: klass,
-  //       lessons: lessons
-  //     }})
-  //   } catch (err) {
-  //     console.log(err)
-  //     res.json({code:0,messsage: '服务器错误'});
-  //   }
-  // },
   adduser: async function(req, res, next){
     let class_id = req.params.id;
     let user_id = req.body.user_id;
@@ -239,6 +181,7 @@ const ClassControllers = {
       await UserClassModel.insert({user_id, class_id});
       await UserLessonModel.insert(userLessons)
       res.json({ 
+        ceshi:userCLass,
          code: 200, 
          data: '加入成功'
        })

@@ -51,9 +51,9 @@ router.post('/class/:id/adduser',/*authmiddleFilter.loginFilter,*/  classControl
 
 // 课
 router.put('/lesson/:id',/*authmiddleFilter.loginFilter,*/  lessonController.update);
-router.get('/lesson/:id',/*authmiddleFilter.loginFilter,*/  lessonController.show);
-router.get('/lesson/:id/callnow',/*authmiddleFilter.loginFilter,*/  lessonController.callnow);
-
+router.get('/lesson/:id',/*authmiddleFilter.loginFilter,*/  lessonController.personal);
+router.post('/lesson/:id/callnow',/*authmiddleFilter.loginFilter,*/  lessonController.callnow);
+router.post('/lesson/:id/status', /*authmiddleFilter.loginFilter,*/ lessonController.status);
 
 module.exports = router;
  
