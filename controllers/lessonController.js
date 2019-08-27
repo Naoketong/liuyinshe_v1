@@ -43,7 +43,6 @@ const lessonController = {
         code: 200, 
         messsage: '获取成功',
         data:{
-          // ceshi:users,
           lesson: lessonFirst,
           users: users,
         }
