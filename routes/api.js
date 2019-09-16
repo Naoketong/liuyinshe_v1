@@ -1,14 +1,19 @@
 var express = require('express');
 var router = express.Router();
 
-var managerControllers = require('./../controllers/managerControllers.js')
-var userControllers = require('./../controllers/userControllers.js')
-var paymentControllers = require('./../controllers/paymentControllers.js')
-var courseControllers = require('./../controllers/courseControllers.js')
-var classControllers = require('./../controllers/classControllers.js')
-var lessonController = require('./../controllers/lessonController.js')
-var authControllers = require('./../controllers/authControllers.js')
-// var authmiddleFilter = require('./../authmiddleFilter/middleFilter.js')
+var managerControllers = require('./../controllers/managerControllers.js');
+var userControllers = require('./../controllers/userControllers.js');
+var paymentControllers = require('./../controllers/paymentControllers.js');
+var courseControllers = require('./../controllers/courseControllers.js');
+var classControllers = require('./../controllers/classControllers.js');
+var lessonController = require('./../controllers/lessonController.js');
+var authControllers = require('./../controllers/authControllers.js');
+var leaveController = require('./../controllers/leaveController.js');
+var miniController = require('./../controllers/miniController.js');
+
+
+
+// var authmiddleFilter = require('./../authmiddleFilter/middleFilter.js');
 
 const knex = require('./../models/knex.js');
 
@@ -54,6 +59,21 @@ router.put('/lesson/:id',/*authmiddleFilter.loginFilter,*/  lessonController.upd
 router.get('/lesson/:id',/*authmiddleFilter.loginFilter,*/  lessonController.personal);
 router.post('/lesson/:id/callnow',/*authmiddleFilter.loginFilter,*/  lessonController.callnow);
 router.post('/lesson/:id/status', /*authmiddleFilter.loginFilter,*/ lessonController.status);
+
+
+// 请假
+router.get('/leave', /*authmiddleFilter.loginFilter,*/ leaveController.show);
+router.put('/leave/:id', /*authmiddleFilter.loginFilter,*/ leaveController.update);
+
+//小程序
+router.post('/miniprogram/wxbind', miniController.wxbind);
+
+router.post('/miniprogram/wxlogin', miniController.wxlogin);
+
+
+router.get('/miniprogram/user/:user_id/class', miniController.class);
+router.get('/miniprogram/user/:user_id/class/:class_id', miniController.classItem);
+router.post('/miniprogram/user-lesson/:id/leave-apply', miniController.leaveApply);
 
 module.exports = router;
  
